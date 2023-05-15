@@ -138,7 +138,7 @@ def api_add_airports():
     conn = create_conn('cis3368fall.chiudr0wp2rq.us-east-2.rds.amazonaws.com', 'admin', 'admin123', 'CIS3368FALLDB')
     cursor = conn.cursor()
     add_to = '(airport_code,airport_name,country)'
-    sql = f"insert into airports {add_to} values ('{new_airports_code}', '{new_airports_name}', '{new_airports_country}')"
+    sql = f"insert into airports {add_to} values (upper('{new_airports_code}'), '{new_airports_name}', upper('{new_airports_country}'))"
 
     try:
         cursor.execute(sql)
@@ -182,7 +182,7 @@ def api_delete_airports():
     conn = create_conn('cis3368fall.chiudr0wp2rq.us-east-2.rds.amazonaws.com', 'admin', 'admin123', 'CIS3368FALLDB')
     cursor = conn.cursor()
 
-    sql = f"delete from airports where airport_name = '{name}' and airport_code = '{code}' and country = '{country}'"
+    sql = f"delete from airports where airport_name = '{name}' and airport_code = upper('{code}') and country = upper('{country}')"
 
     print(sql)
 
@@ -209,7 +209,7 @@ def api_get_flights():
                        ' a1.id = flights.airport_from_id ' +
                        ' inner join airports a2 on ' +
                        ' a2.id = flights.airport_to_id' +
-                       ' order by date ')
+                       ' order by date desc')
         result = cursor.fetchall()
     except Error as e:
         print(f'The error {e} occurred')
@@ -325,4 +325,5 @@ def api_reset_users():
     return jsonify(result)
 
 
-application.run()
+if __name__ == '__main__':
+    application.run(debug=True)
